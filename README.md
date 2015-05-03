@@ -1,106 +1,32 @@
-# docusign-api [![Build Status](https://travis-ci.org/hadynz/docusign-api.svg)](https://travis-ci.org/hadynz/docusign-api)
+# pdftk-formfill
 
-Promise based DocuSign API for NodeJS.
+Form fill wrapper around PDFtk's implementation using streams
 
 ## Installation
 
 ```bash
-npm install docusign-api
+npm install pdftk-formfill
 ```
 
 ## Usage
 
 ```js
-var DocuSign = require('docusign-api'),
-var config = {
-  email: '#EMAIL',
-  password: '#PASSWORD',
-  key: '#INTEGRATOR KEY'
+var fs = require('fs');
+var pdftkFormFill = require('PDFtkFormFill');
+
+var outputPath = './output.pdf';
+var sampleData = {
+  ...
 };
 
-// Then we instantiate a client with DocuSign auth tokens
-
-var docuSign = new DocuSign(config);
-```
-
-## DocuSign api
-
-You must have a valid DocuSign auth token (password and integrator key) for the following:
-
-#### Login to DocuSign (GET /login_information)
-
-```js
-var docuSign = new DocuSign(config);
-
-docuSign
-  .login()
-  .then(function(response){
-    console.log('API baseUrl', response.baseUrl);
-    console.log('DocuSign accountId', response.accountId);
+pdftkFormFill('./sample.pdf', sampleData, function(err, out, code){
+  fs.writeFile(outputPath, out, function(err) {
+    if(err) {
+      return console.log(err);
+    }
+    console.log("The file was saved!");
   });
-```
-
-#### Create an Envelope to request a signature  (POST /envelopes)
-
-```js
-var docuSign = new DocuSign(config);
-
-var envelopeRequest = {
-  emailSubject: 'API Call that uses a Template',
-  templateId: 'xxxxx-xxx-xxxx-xxxx-xxxxxxxxxx',
-  templateRoles: [{
-    roleName: 'Role'
-    name: 'Sally Doe',
-    email: 'sally.doe@email.com'
-  }],
-  status: 'sent'
-};
-
-docuSign
-  .requestSignature(envelopeRequest)
-  .then(function(envelopeId){
-    console.log('Envelope ID', envelopeId);
-  });
-```
-
-#### Get Recipient View for embedded signing (POST /#{envelopeId}/views/recipient)
-
-```js
-var docuSign = new DocuSign(config);
-
-var envelopeId = 'xxxx-xxx-xxxx';
-
-var recipientRequest = {
-  returnUrl: 'http://www.docusign.com/devcenter',
-  authenticationMethod: 'email',
-  userName: 'Sally Doe',
-  email: 'sally.doe@email.com'
-};
-
-docuSign
-  .getRecipientView(envelopeId, recipientRequest)
-  .then(function(response){
-    console.log('Embedded signing workflow Url', response.url);
-  });
-```
-
-## Testing
-
-### Unit Tests
-
-```bash
-npm test
-```
-
-### Integration Tests
-
-Integration tests will test the API end to end against a real DocuSign API endpoint. You will first 
-need to rename [`config.dev.json.stub`][stub] to `config.dev.json` and update with your DocuSign auth settings.
-
-To run integration tests:
-
-```bash
-grunt integration
+});
 ```
 
 ## License
