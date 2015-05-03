@@ -1,0 +1,17 @@
+# Config Files
+config.dev.json
+Gruntfile.js
+
+# Folders
+test
+
+# Config Files
+.editorconfig
+.gitattributes
+.gitignore
+.jshint*
+.npmignore
+.travis.yml
+
+# IDE
+.idea
